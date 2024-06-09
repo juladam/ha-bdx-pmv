@@ -78,4 +78,4 @@ class PMVEntity(Entity):
     @property
     def icon(self):
         """Return the icon to use in the frontend."""
-        return 'mdi:email'
+        return 'mdi:message-text-outline'
