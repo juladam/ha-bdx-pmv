@@ -1,13 +1,13 @@
 {
     "domain": "bdx_pmv",
     "name": "Bordeaux PMV",
-    "documentation": "",
+    "documentation": "https://github.com/juladam/ha-bdx-pmv",
     "dependencies": [],
     "codeowners": [
-        "@asphalia"
+        "@Ioulianos"
     ],
     "requirements": [
         "beautifulsoup4==4.7.1"
     ],
-    "version": "1.0.0"
+    "version": "1.0.1"
 }
