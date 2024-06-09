@@ -1,0 +1,13 @@
+{
+    "domain": "bdx_pmv",
+    "name": "Bordeaux PMV",
+    "documentation": "",
+    "dependencies": [],
+    "codeowners": [
+        "@asphalia"
+    ],
+    "requirements": [
+        "beautifulsoup4==4.7.1"
+    ],
+    "version": "3.12.0"
+}

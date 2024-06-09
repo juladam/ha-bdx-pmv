@@ -1,0 +1,13 @@
+# https://www.home-assistant.io/integrations/default_config/
+default_config:
+
+# https://www.home-assistant.io/integrations/logger/
+logger:
+  default: info
+  logs:
+    custom_components.bdx_pmv: debug
+
+sensor:
+  - platform: bdx_pmv
+    bdx_data_key: !secret bdx_data_key
+    scan_interval: 3600

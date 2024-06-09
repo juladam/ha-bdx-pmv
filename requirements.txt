@@ -1,0 +1,8 @@
+imapclient==2.1.0
+mail-parser==3.9.3
+colorlog==6.8.0
+homeassistant==2024.3.3
+pip>=21.0,<23.2
+ruff==0.0.292
+cloudscraper
+beautifulsoup4
