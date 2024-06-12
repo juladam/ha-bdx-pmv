@@ -10,4 +10,5 @@ logger:
 sensor:
   - platform: bdx_pmv
     bdx_data_key: !secret bdx_data_key
+    bdx_no_data: ""
     scan_interval: 3600

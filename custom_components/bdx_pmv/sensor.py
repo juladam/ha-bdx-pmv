@@ -9,7 +9,7 @@ from homeassistant.helpers.entity import Entity
 import requests
 
 from .const import (
-    CONF_KEY, CONF_IDENT, ATTR_PAGE)
+    CONF_KEY, CONF_IDENT, CONF_NO_DATA, ATTR_PAGE)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,6 +19,7 @@ SCAN_INTERVAL = timedelta(seconds=30*60)
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_KEY): cv.string,
     vol.Required(CONF_IDENT, default='Z40P115'): cv.string,
+    vol.Required(CONF_NO_DATA, default='***'): cv.string,
 })
 
 
@@ -41,6 +42,7 @@ class PMVEntity(Entity):
 
         self.bdx_key = config[CONF_KEY]
         self.ident = config[CONF_IDENT]
+        self.no_data = config[CONF_NO_DATA]
         self.page = page
 
     def update(self):
@@ -55,7 +57,7 @@ class PMVEntity(Entity):
         _LOGGER.debug(f'json data: {data}')
         for feature in data['features']:
             if feature['properties']['ident'] == self.ident:
-                self._attr[ATTR_PAGE] = feature['properties'][self.page]
+                self._attr[ATTR_PAGE] = self.no_data if feature['properties'][self.page] == None else feature['properties'][self.page]
                 break
 
         _LOGGER.debug(f'ATTR_PAGE: {self._attr[ATTR_PAGE]}')

@@ -15,6 +15,7 @@ Une clef est nécessaire pour interroger le webservice
 sensor:
   - platform: bdx_pmv
     bdx_data_key: !secret bdx_data_key
+    bdx_no_data: ""
 ```
 
 [Exemple dataset](https://opendata.bordeaux-metropole.fr/explore/dataset/pc_pmv_p/table/) pour trouver les ids des panneaux
