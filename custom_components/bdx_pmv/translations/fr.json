@@ -1,0 +1,34 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Bordeaux PMV",
+        "description": "Configurer un panneau à messages variables (PMV) de Bordeaux Métropole.",
+        "data": {
+          "bdx_data_key": "Clé API",
+          "ident": "Identifiant du panneau (ident)",
+          "bdx_no_data": "Texte affiché quand le panneau n'a pas de message"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à l'API Bordeaux Métropole.",
+      "invalid_auth": "Clé API invalide.",
+      "unknown": "Erreur inattendue."
+    },
+    "abort": {
+      "already_configured": "Ce panneau PMV est déjà configuré."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options Bordeaux PMV",
+        "data": {
+          "bdx_no_data": "Texte affiché quand le panneau n'a pas de message",
+          "scan_interval": "Intervalle de mise à jour (secondes)"
+        }
+      }
+    }
+  }
+}

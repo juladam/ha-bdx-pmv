@@ -1,83 +1,69 @@
-from datetime import timedelta
+"""Bordeaux PMV sensor platform."""
 import logging
 
-import voluptuous as vol
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.entity import Entity
-import requests
-
-from .const import (
-    CONF_KEY, CONF_IDENT, CONF_NO_DATA, ATTR_PAGE)
+from .const import CONF_IDENT, CONF_NO_DATA
 
 _LOGGER = logging.getLogger(__name__)
 
-DOMAIN = 'bdx_pmv'
-SCAN_INTERVAL = timedelta(seconds=30*60)
-
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_KEY): cv.string,
-    vol.Required(CONF_IDENT, default='Z40P115'): cv.string,
-    vol.Required(CONF_NO_DATA, default='***'): cv.string,
-})
+DOMAIN = "bdx_pmv"
+DEFAULT_NO_DATA = "***"
 
 
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up the combined PMV sensor from a config entry."""
+    coordinator: DataUpdateCoordinator = hass.data[DOMAIN][entry.entry_id]
+    ident = entry.data[CONF_IDENT]
+    no_data = entry.options.get(CONF_NO_DATA, DEFAULT_NO_DATA)
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    """Set up the PMV platform."""
-    pages = ['page1', 'page2']
-    entities = [PMVEntity(config, page) for page in pages]
-    add_entities(entities, True)
+    async_add_entities([PMVCombinedEntity(coordinator, ident, no_data)])
 
 
-class PMVEntity(Entity):
-    """PMV Entity."""
+class PMVCombinedEntity(CoordinatorEntity, SensorEntity):
+    """Sensor combining page1 and page2 of a PMV sign."""
 
-    def __init__(self, config, page):
-        """Init the PMV Entity."""
-        self._attr = {
-            ATTR_PAGE: {}
+    def __init__(
+        self,
+        coordinator: DataUpdateCoordinator,
+        ident: str,
+        no_data: str,
+    ) -> None:
+        """Initialise the combined PMV sensor."""
+        super().__init__(coordinator)
+        self._ident = ident
+        self._no_data = no_data
+
+        self._attr_unique_id = f"{ident}_combined"
+        self._attr_name = f"pmv_{ident}"
+        self._attr_icon = "mdi:message-text-outline"
+
+    def _page_value(self, page: str) -> str:
+        """Return the value for a given page, falling back to no_data."""
+        if self.coordinator.data is None:
+            return self._no_data
+        value = self.coordinator.data.get(page)
+        return self._no_data if value is None else value
+
+    @property
+    def native_value(self) -> str:
+        """Return page1 and page2 joined with a newline."""
+        page1 = self._page_value("page1")
+        page2 = self._page_value("page2")
+        return f"{page1}\n{page2}"
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Expose page1 and page2 as individual attributes."""
+        return {
+            "page1": self._page_value("page1"),
+            "page2": self._page_value("page2"),
         }
-
-        self.bdx_key = config[CONF_KEY]
-        self.ident = config[CONF_IDENT]
-        self.no_data = config[CONF_NO_DATA]
-        self.page = page
-
-    def update(self):
-        """Update data."""
-        self._attr = {
-            ATTR_PAGE: {}
-        }
-
-        url = "https://data.bordeaux-metropole.fr/geojson?key={}&typename=pc_pmv_p".format(self.bdx_key)
-        response = requests.get(url)
-        data = response.json()
-        _LOGGER.debug(f'json data: {data}')
-        for feature in data['features']:
-            if feature['properties']['ident'] == self.ident:
-                self._attr[ATTR_PAGE] = self.no_data if feature['properties'][self.page] == None else feature['properties'][self.page]
-                break
-
-        _LOGGER.debug(f'ATTR_PAGE: {self._attr[ATTR_PAGE]}')
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return 'pmv_{}_{}'.format(self.ident, self.page)
-
-    @property
-    def state(self):
-        """Return the state of the sensor."""
-        return self._attr[ATTR_PAGE]
-
-    @property
-    def extra_state_attributes(self):
-        """Return the state attributes."""
-        return self._attr
-
-    @property
-    def icon(self):
-        """Return the icon to use in the frontend."""
-        return 'mdi:message-text-outline'

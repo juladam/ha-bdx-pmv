@@ -1,0 +1,34 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Bordeaux PMV",
+        "description": "Configure a Bordeaux Métropole variable message sign (PMV).",
+        "data": {
+          "bdx_data_key": "API Key",
+          "ident": "Sign identifier (ident)",
+          "bdx_no_data": "Text when no message is displayed"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the Bordeaux Métropole API.",
+      "invalid_auth": "Invalid API key.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This PMV sign is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Bordeaux PMV options",
+        "data": {
+          "bdx_no_data": "Text when no message is displayed",
+          "scan_interval": "Update interval (seconds)"
+        }
+      }
+    }
+  }
+}
